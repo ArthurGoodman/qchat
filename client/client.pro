@@ -4,10 +4,16 @@ TARGET = client
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    mainwindow.cpp \
     ../common/console.cpp \
-    ../common/iconsole.cpp
+    ../common/iconsole.cpp \
+    connectdialog.cpp \
+    client.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     ../common/console.h \
-    ../common/iconsole.h
+    ../common/iconsole.h \
+    connectdialog.h \
+    client.h
+
+FORMS += \
+    connectdialog.ui

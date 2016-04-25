@@ -1,11 +1,22 @@
-#include "mainwindow.h"
 #include <QApplication>
 
+#include "connectdialog.h"
+#include "client.h"
+
 int main(int argc, char *argv[]) {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
 
-    MainWindow w;
-    w.show();
+    ConnectDialog dialog;
+    dialog.exec();
 
-    return a.exec();
+    if (dialog.result() == QDialog::Rejected)
+        return 0;
+    else {
+        QHostAddress ipAddress = dialog.getIPAddress();
+
+        Client *client = new Client;
+        client->connectToServer(ipAddress, 43567);
+    }
+
+    return app.exec();
 }

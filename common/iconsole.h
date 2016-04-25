@@ -8,7 +8,7 @@ class IConsole {
 public:
     virtual ~IConsole();
 
-    virtual void write(const QString &text, const QColor &color = Qt::black) = 0;
+    virtual void write(const QString &text, const QColor &color = Qt::lightGray) = 0;
 };
 
 #endif // ICONSOLE_H

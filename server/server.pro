@@ -4,13 +4,12 @@ TARGET = server
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    mainwindow.cpp \
     server.cpp \
     serverwindow.cpp \
     ../common/console.cpp \
     ../common/iconsole.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     server.h \
     serverwindow.h \
     ../common/console.h \

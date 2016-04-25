@@ -3,7 +3,7 @@
 Server::Server(IConsole *console)
     : console(console) {
     tcpServer = new QTcpServer(this);
-    connect(tcpServer, QTcpServer::newConnection, this, Server::newConnection);
+    connect(tcpServer, SIGNAL(newConnection()), SLOT(newConnection()));
 }
 
 Server::~Server() {
@@ -20,5 +20,8 @@ void Server::start(ushort port) {
 }
 
 void Server::newConnection() {
-    qDebug() << tcpServer->nextPendingConnection();
+    QTcpSocket *client = tcpServer->nextPendingConnection();
+    connect(client, SIGNAL(disconnected()), client, SLOT(deleteLater()));
+
+    console->write("Client connected.");
 }
