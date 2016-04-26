@@ -18,7 +18,8 @@ public:
     void start(ushort port);
 
 private slots:
-    void newConnection();
+    void clientConnected();
+    void clientDisconnected();
 };
 
 #endif // SERVER_H

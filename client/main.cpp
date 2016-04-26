@@ -16,6 +16,8 @@ int main(int argc, char *argv[]) {
 
         Client *client = new Client;
         client->connectToServer(ipAddress, 43567);
+
+        (new QWidget)->show();
     }
 
     return app.exec();
