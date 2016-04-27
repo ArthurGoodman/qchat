@@ -11,6 +11,8 @@ public:
 
     void write(const QString &text, const QColor &color);
     void writeLine(const QString &text, const QColor &color);
+
+    void timestamp();
 };
 
 #endif // CONSOLE_H

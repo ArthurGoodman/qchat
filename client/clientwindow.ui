@@ -68,6 +68,11 @@
    <header>../common/console.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>messageEdit</tabstop>
+  <tabstop>sendButton</tabstop>
+  <tabstop>console</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

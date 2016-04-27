@@ -14,15 +14,18 @@ class Client : public QObject {
     IConsole *console;
 
 public:
-    Client(QString username);
+    Client();
     ~Client();
 
     void setConsole(IConsole *console);
 
     void connectToServer(QHostAddress address, ushort port);
 
-    void login(QString username);
+    void login();
     void sendMessage(QString message);
+
+    void setUsername(const QString &username);
+    QString getUsername();
 
 private slots:
     void connected();
@@ -33,6 +36,13 @@ private slots:
 private:
     void processCommand(QString command);
     void reportError(QString message);
+    void writeMessage(const QJsonObject &obj);
+    void writePrivateMessage(const QJsonObject &obj);
+
+signals:
+    void connectedToServer();
+    void accepted();
+    void rejected();
 };
 
 #endif // CLIENT_H

@@ -27,6 +27,15 @@ private slots:
 
 private:
     void processCommand(QTcpSocket *client, QString command);
+
+    void broadcast(QString message, QTcpSocket *except = 0);
+
+    void accept(QTcpSocket *client);
+    void reject(QTcpSocket *client);
+
+    void noSuchUser(QTcpSocket *client);
+
+    void reportUsers(QTcpSocket *client);
 };
 
 #endif // SERVER_H

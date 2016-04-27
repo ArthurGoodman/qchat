@@ -1,5 +1,7 @@
 #include "console.h"
 
+#include <QTime>
+
 Console::Console(QWidget *parent)
     : QTextEdit(parent) {
     setReadOnly(true);
@@ -9,10 +11,21 @@ Console::Console(QWidget *parent)
 }
 
 void Console::write(const QString &text, const QColor &color) {
-    insertHtml("<font color=\"" + color.name() + "\">" + text + "</font>");
+    moveCursor(QTextCursor::End);
+
+    QTextCharFormat format = currentCharFormat();
+    format.setForeground(color);
+    setCurrentCharFormat(format);
+
+    insertPlainText(text);
 }
 
 void Console::writeLine(const QString &text, const QColor &color) {
     write(text, color);
-    insertHtml("<br>");
+
+    insertPlainText("\n");
+}
+
+void Console::timestamp() {
+    write(QTime::currentTime().toString("hh:mm") + " ", Qt::darkGray);
 }

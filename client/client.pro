@@ -8,14 +8,16 @@ SOURCES += main.cpp \
     ../common/iconsole.cpp \
     connectdialog.cpp \
     client.cpp \
-    clientwindow.cpp
+    clientwindow.cpp \
+    ../common/utility.cpp
 
 HEADERS  += \
     ../common/console.h \
     ../common/iconsole.h \
     connectdialog.h \
     client.h \
-    clientwindow.h
+    clientwindow.h \
+    ../common/utility.h
 
 FORMS += \
     connectdialog.ui \

@@ -10,6 +10,8 @@ ClientWindow::ClientWindow(Client *client, QWidget *parent)
     client->setConsole(ui->console);
 
     ui->messageEdit->setFont(QFont("Consolas", 10));
+
+    setWindowTitle("Client - " + client->getUsername());
 }
 
 ClientWindow::~ClientWindow() {
@@ -17,6 +19,9 @@ ClientWindow::~ClientWindow() {
 }
 
 void ClientWindow::on_sendButton_clicked() {
+    if (ui->messageEdit->text().isEmpty())
+        return;
+
     client->sendMessage(ui->messageEdit->text());
     ui->messageEdit->clear();
 }

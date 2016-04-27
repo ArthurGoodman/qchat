@@ -2,6 +2,8 @@
 
 #include <QtWidgets>
 
+#include "../common/utility.h"
+
 Server::Server(IConsole *console)
     : console(console) {
     tcpServer = new QTcpServer(this);
@@ -39,6 +41,13 @@ void Server::clientDisconnected() {
     userSocket.remove(username);
 
     console->writeLine(username + " disconnected.");
+
+    QJsonObject obj;
+    obj["command"] = "leave";
+    obj["username"] = username;
+
+    QJsonDocument doc(obj);
+    broadcast(doc.toJson());
 }
 
 void Server::readyRead() {
@@ -47,16 +56,79 @@ void Server::readyRead() {
 }
 
 void Server::processCommand(QTcpSocket *client, QString command) {
-    console->writeLine(command);
+    console->writeLine(command.simplified());
 
     QJsonDocument doc = QJsonDocument::fromJson(command.toUtf8());
     QJsonObject obj = doc.object();
 
     if (obj["command"].toString() == "login") {
-        userSocket[obj["username"].toString()] = client;
-        socketUser[client] = obj["username"].toString();
+        if (userSocket.keys().contains(obj["username"].toString())) {
+            reject(client);
+        } else {
+            accept(client);
+
+            userSocket[obj["username"].toString()] = client;
+            socketUser[client] = obj["username"].toString();
+
+            broadcast(command, client);
+        }
     } else if (obj["command"].toString() == "broadcast") {
-        foreach (QTcpSocket *socket, socketUser.keys())
-            socket->write(command.toUtf8());
+        broadcast(command, client);
+    } else if (obj["command"].toString() == "private") {
+        if (!userSocket.keys().contains(obj["recipient"].toString()))
+            noSuchUser(client);
+        else if (userSocket[obj["recipient"].toString()] != client) {
+            userSocket[obj["recipient"].toString()]->write(command.toUtf8());
+        }
+    } else if (obj["command"].toString() == "users") {
+        reportUsers(client);
     }
+}
+
+void Server::broadcast(QString message, QTcpSocket *except) {
+    foreach (QTcpSocket *socket, socketUser.keys())
+        if (socket != except)
+            socket->write(message.toUtf8());
+}
+
+void Server::accept(QTcpSocket *client) {
+    QJsonObject obj;
+    obj["command"] = "accept";
+
+    QJsonDocument doc(obj);
+    client->write(doc.toJson());
+}
+
+void Server::reject(QTcpSocket *client) {
+    QJsonObject obj;
+    obj["command"] = "reject";
+
+    QJsonDocument doc(obj);
+    client->write(doc.toJson());
+}
+
+void Server::noSuchUser(QTcpSocket *client) {
+    QJsonObject obj;
+    obj["command"] = "no_such_user";
+
+    QJsonDocument doc(obj);
+    client->write(doc.toJson());
+}
+
+void Server::reportUsers(QTcpSocket *client) {
+    QString users = "";
+
+    foreach (QString user, userSocket.keys()) {
+        if (!users.isEmpty())
+            users += ",";
+
+        users += user;
+    }
+
+    QJsonObject obj;
+    obj["command"] = "users";
+    obj["users"] = users;
+
+    QJsonDocument doc(obj);
+    client->write(doc.toJson());
 }
