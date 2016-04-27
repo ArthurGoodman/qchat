@@ -11,6 +11,9 @@ class Server : public QObject {
     IConsole *console;
     QTcpServer *tcpServer;
 
+    QMap<QString, QTcpSocket *> userSocket;
+    QMap<QTcpSocket *, QString> socketUser;
+
 public:
     Server(IConsole *console);
     ~Server();
@@ -20,6 +23,10 @@ public:
 private slots:
     void clientConnected();
     void clientDisconnected();
+    void readyRead();
+
+private:
+    void processCommand(QString command);
 };
 
 #endif // SERVER_H

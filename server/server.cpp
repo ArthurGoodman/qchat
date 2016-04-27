@@ -23,12 +23,27 @@ void Server::clientConnected() {
     QTcpSocket *client = tcpServer->nextPendingConnection();
     connect(client, SIGNAL(disconnected()), SLOT(clientDisconnected()));
     connect(client, SIGNAL(disconnected()), client, SLOT(deleteLater()));
+    connect(client, SIGNAL(readyRead()), SLOT(readyRead()));
 
     console->write("Client connected.");
 }
 
 void Server::clientDisconnected() {
-    QTcpSocket *socket = (QTcpSocket *)sender();
+    QTcpSocket *client = (QTcpSocket *)sender();
 
-    console->write("Client disconnected.");
+    QString username = socketUser[client];
+
+    socketUser.remove(client);
+    userSocket.remove(username);
+
+    console->write(username + " disconnected.");
+}
+
+void Server::readyRead() {
+    QTcpSocket *client = (QTcpSocket *)sender();
+    processCommand(client->readAll());
+}
+
+void Server::processCommand(QString command) {
+    console->write(command);
 }
