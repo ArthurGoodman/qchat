@@ -2,10 +2,14 @@
 
 #include <QtWidgets>
 
-Client::Client() {
+#include "clientwindow.h"
+
+Client::Client(QString username)
+    : username(username), console(0) {
     tcpSocket = new QTcpSocket(this);
     connect(tcpSocket, SIGNAL(connected()), SLOT(connected()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
+    connect(tcpSocket, SIGNAL(disconnected()), SLOT(disconnected()));
     connect(tcpSocket, SIGNAL(readyRead()), SLOT(readyRead()));
 }
 
@@ -13,12 +17,41 @@ Client::~Client() {
     delete tcpSocket;
 }
 
+void Client::setConsole(IConsole *console) {
+    this->console = console;
+}
+
 void Client::connectToServer(QHostAddress address, ushort port) {
     tcpSocket->connectToHost(address, port);
 }
 
+void Client::login(QString username) {
+    QJsonObject obj;
+    obj["command"] = "login";
+    obj["username"] = username;
+
+    QJsonDocument doc(obj);
+    tcpSocket->write(doc.toJson());
+}
+
+void Client::sendMessage(QString message) {
+    QJsonObject obj;
+    obj["command"] = "broadcast";
+    obj["message"] = message;
+
+    QJsonDocument doc(obj);
+    tcpSocket->write(doc.toJson());
+}
+
 void Client::connected() {
-    qDebug() << "connected";
+    ClientWindow *window = new ClientWindow(this);
+    window->show();
+
+    login(username);
+}
+
+void Client::disconnected() {
+    reportError("Disconnected from server.");
 }
 
 void Client::socketError(QAbstractSocket::SocketError error) {
@@ -27,18 +60,32 @@ void Client::socketError(QAbstractSocket::SocketError error) {
         break;
 
     case QAbstractSocket::HostNotFoundError:
-        QMessageBox::critical(0, "Error", "Host not found.");
+        reportError("Host not found.");
         break;
 
     case QAbstractSocket::ConnectionRefusedError:
-        QMessageBox::critical(0, "Error", "Connection refused.");
+        reportError("Connection refused.");
         break;
 
     default:
-        QMessageBox::critical(0, "Error", tcpSocket->errorString());
+        reportError(tcpSocket->errorString());
     }
 }
 
 void Client::readyRead() {
-    qDebug() << "readyRead";
+    processCommand(tcpSocket->readAll());
+}
+
+void Client::processCommand(QString command) {
+    console->writeLine(command);
+
+    QJsonDocument doc = QJsonDocument::fromJson(command.toUtf8());
+    QJsonObject obj = doc.object();
+}
+
+void Client::reportError(QString message) {
+    if (console != 0)
+        console->writeLine(message, Qt::red);
+    else
+        QMessageBox::critical(0, "Error", message);
 }

@@ -26,7 +26,7 @@ private slots:
     void readyRead();
 
 private:
-    void processCommand(QString command);
+    void processCommand(QTcpSocket *client, QString command);
 };
 
 #endif // SERVER_H

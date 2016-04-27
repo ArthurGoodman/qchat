@@ -9,5 +9,10 @@ Console::Console(QWidget *parent)
 }
 
 void Console::write(const QString &text, const QColor &color) {
-    insertHtml("<font color=\"" + color.name() + "\">" + text + "</font><br>");
+    insertHtml("<font color=\"" + color.name() + "\">" + text + "</font>");
+}
+
+void Console::writeLine(const QString &text, const QColor &color) {
+    write(text, color);
+    insertHtml("<br>");
 }

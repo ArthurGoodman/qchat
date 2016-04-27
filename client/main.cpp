@@ -13,11 +13,10 @@ int main(int argc, char *argv[]) {
         return 0;
     else {
         QHostAddress ipAddress = dialog.getIPAddress();
+        QString username = dialog.getUsername();
 
-        Client *client = new Client;
+        Client *client = new Client(username);
         client->connectToServer(ipAddress, 43567);
-
-        (new QWidget)->show();
     }
 
     return app.exec();
