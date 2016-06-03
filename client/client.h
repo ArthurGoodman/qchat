@@ -3,7 +3,7 @@
 
 #include <QtNetwork>
 
-#include "../common/Iconsole.h"
+#include "../common/iconsole.h"
 
 class Client : public QObject {
     Q_OBJECT
